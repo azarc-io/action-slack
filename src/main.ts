@@ -1,5 +1,7 @@
 import * as core from '@actions/core';
-import { Client, Success, Failure, Cancelled, Custom } from './client';
+import {Client, Success, Failure, Cancelled, Custom, CustomFile} from './client';
+import * as fs from 'fs'
+
 
 async function run(): Promise<void> {
   try {
@@ -61,6 +63,9 @@ async function run(): Promise<void> {
       case Custom:
         await client.send(await client.custom(custom_payload));
         break;
+      case CustomFile:
+        const data = fs.readFileSync(custom_payload, 'utf8')
+        await client.send(await client.custom(data.toString()));
       default:
         throw new Error(
           'You can specify success or failure or cancelled or custom',

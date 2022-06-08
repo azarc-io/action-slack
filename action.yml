@@ -14,7 +14,7 @@ inputs:
     required: false
   custom_payload:
     description: |
-      json payload
+      json payload or file path if status is set to custom_file
       refs https://github.com/slackapi/node-slack-sdk/blob/v5.0.0/packages/webhook/src/IncomingWebhook.ts#L91-L106)
     required: false
   mention:

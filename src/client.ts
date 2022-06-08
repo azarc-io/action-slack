@@ -17,6 +17,7 @@ export const Cancelled = 'cancelled';
 type CancelledType = 'cancelled';
 export const Custom = 'custom';
 export const Always = 'always';
+export const CustomFile = 'custom_file'
 type AlwaysType = 'always';
 
 export type Octokit = InstanceType<typeof GitHub>;
