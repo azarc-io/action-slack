@@ -41,7 +41,7 @@ runs:
                 "type": "section",
                 "text": {
                   "type": "plain_text",
-                  "text": "Frontend Build Failed",
+                  "text": "${{ inputs.header }}",
                   "emoji": true
                 }
               }
@@ -131,7 +131,7 @@ runs:
                 "type": "section",
                 "text": {
                   "type": "plain_text",
-                  "text": "Frontend Build Failed",
+                  "text": "${{ inputs.header }}",
                   "emoji": true
                 }
               }
