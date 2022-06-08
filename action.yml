@@ -138,7 +138,7 @@ runs:
             ],
             "attachments": [
               {
-                "color": "#c33124",
+                "color": "#8ac926",
                 "blocks": [
                   {
                     "type": "section",
