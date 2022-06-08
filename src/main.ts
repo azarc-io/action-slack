@@ -65,7 +65,7 @@ async function run(): Promise<void> {
         break;
       case CustomFile:
         const data = fs.readFileSync(custom_payload, 'utf8')
-        await client.send(await client.custom(`$data.toString()`));
+        await client.send(await client.custom(`${data.toString()}`));
       default:
         throw new Error(
           'You can specify success or failure or cancelled or custom',
