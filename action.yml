@@ -21,11 +21,16 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - id: find-pull-request
+      uses: jwalton/gh-find-current-pr@v1
+      with:
+        # Can be "open", "closed", or "all".  Defaults to "open".
+        state: open
     - uses: 8398a7/action-slack@v3
+      if: inputs.template == 'error'
       with:
         status: custom
         fields: workflow,job,commit,repo,ref,author,took
-        if: inputs.template == 'error'
         custom_payload: |
           {
             "text": "${{ inputs.title }}",
@@ -34,7 +39,7 @@ runs:
                 "type": "section",
                 "text": {
                   "type": "plain_text",
-                  "text": "${{ inputs.header }}",
+                  "text": "Frontend Build Failed",
                   "emoji": true
                 }
               }
@@ -67,6 +72,41 @@ runs:
                       {
                         "type": "mrkdwn",
                         "text": "*Author:* ${{ github.event.pusher.email }}"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "Job",
+                          "emoji": true
+                        },
+                        "action_id": "checks_1",
+                        "url": "${{github.server_url}}/${{github.repository}}/commit/${{github.sha}}/checks"
+                      },
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "Repo",
+                          "emoji": true
+                        },
+                        "action_id": "checks_2",
+                        "url": "${{github.server_url}}/${{github.repository}}"
+                      },
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "PR",
+                          "emoji": true
+                        },
+                        "action_id": "checks_3",
+                        "url": "${{github.server_url}}/${{github.repository}}/pull/${{ steps.find-pull-request.outputs.number }}"
                       }
                     ]
                   }
