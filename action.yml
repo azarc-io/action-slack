@@ -2,73 +2,77 @@ name: action-slack
 description: You can notify slack of GitHub Actions.
 author: 8398a7
 inputs:
-  status:
-    description: Specify success or failure or cancelled or custom.
+  template:
+    description: Slack message template (error, success, deployed, ready_for_qa, released)
     required: true
-  fields:
-    description: |
-      You can choose the items you want to add to the fields at the time of notification.
-      If you have more than one, please enter it in csv format.
-      e.g. commit,repo
-    default: ""
-    required: false
-  custom_payload:
-    description: |
-      json payload or file path if status is set to custom_file
-      refs https://github.com/slackapi/node-slack-sdk/blob/v5.0.0/packages/webhook/src/IncomingWebhook.ts#L91-L106)
-    required: false
-  mention:
-    description: |
-      Specify channel or here or `user_id`.
-      refs: https://api.slack.com/reference/surfaces/formatting#mentioning-users
-    default: ""
-    required: false
-  if_mention:
-    description: |
-      Specify success or failure or cancelled or custom or always.
-      Multiple statuses can be specified in csv format.
-      e.g. success,failure
-    default: ""
-    required: false
-  author_name:
-    description: User name for slack notification.
-    default: 8398a7@action-slack
-    required: false
-  text:
-    description: You can overwrite text.
-    default: ""
-    required: false
-  username:
-    description: override the legacy integration's default name.
-    default: ""
-    required: false
-  icon_emoji:
-    description: an emoji code string to use in place of the default icon.
-    default: ""
-    required: false
-  icon_url:
-    description: an icon image URL string to use in place of the default icon.
-    default: ""
-    required: false
-  channel:
-    description: override the legacy integration's default channel. This should be an ID, such as C8UJ12P4P.
-    default: ""
-    required: false
-  job_name:
-    description: Use this if you want to overwrite the job name.
-    default: ""
-    required: false
-  github_token:
-    description: Use this if you wish to use a different GitHub token than the one provided by the workflow.
-    required: false
-    default: ${{ github.token }}
-  github_base_url:
-    description: Specify if you want to use GitHub Enterprise.
-    default: ""
-    required: false
+    default: success
+  title:
+    description: Message Title
+    required: true
+  header:
+    description: Message Header
+    required: true
+  ticket:
+    description: Jira Ticket
+    required: true
 runs:
-  using: node12
-  main: dist/index.js
+  using: "composite"
+  steps:
+    - uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        fields: workflow,job,commit,repo,ref,author,took
+        if: inputs.template == 'error'
+        custom_payload: |
+          {
+            "text": "${{ inputs.title }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "plain_text",
+                  "text": "${{ inputs.header }}",
+                  "emoji": true
+                }
+              }
+            ],
+            "attachments": [
+              {
+                "color": "#c33124",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "fields": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Ticket:* ${{ inputs.ticket }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Status:* ${{ job.status }}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "color": "#c33124",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "fields": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Author:* ${{ github.event.pusher.email }}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 branding:
   icon: bell
   color: blue

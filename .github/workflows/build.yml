@@ -5,7 +5,6 @@ on:
       - "*.*"
     branches:
       - main
-      - feat/**
 
 jobs:
   build_slack:
@@ -16,25 +15,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 14
-      - name: Get npm cache directory
-        id: npm-cache-dir
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-      - uses: actions/cache@v3
-        id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('./package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - name: Build
-        shell: bash
-        run: |
-          npm install
-          npm run release
       - name: "Update Versions"
         uses: paulhatch/semantic-version@v4.0.3
         id: versioning
@@ -50,8 +30,6 @@ jobs:
         run: |
           git config --global user.email "${{ github.event.pusher.email }}"
           git config --global user.name "${{ github.event.pusher.name }}"
-          git add .
-          git commit -m 'release: ${{ steps.versioning.outputs.version }}'
           git tag v${{ steps.versioning.outputs.version }}
           git push origin --tags
       - name: "Build Changelog"
