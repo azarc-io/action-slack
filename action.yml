@@ -188,7 +188,7 @@ runs:
                           "emoji": true
                         },
                         "action_id": "checks_11",
-                        "url": "${{github.server_url}}/${{github.repository}}/commit/${{github.sha}}/checks"
+                        "url": "${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}"
                       },
                       {
                         "type": "button",
